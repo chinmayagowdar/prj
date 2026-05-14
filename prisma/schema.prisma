@@ -1,0 +1,36 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Certificate {
+  id            String    @id @default(cuid())
+  recipientName String
+  courseName    String
+  issuer        String    @default("Learn Ledger")
+  qrData        String    // JSON string containing certificate info
+  verified      Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Resume {
+  id            String    @id @default(cuid())
+  userEmail     String
+  fileName      String
+  fileHash      String    @unique // SHA-256 hash of the file
+  filePath      String?   // Path to stored file (for dev) or Blob URL (for prod)
+  score         Int       @default(0) // 0-100 score
+  parsedData    String?   // JSON string of parsed resume
+  blockchainHash String? // Mock blockchain hash
+  verified      Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
