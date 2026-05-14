@@ -1,17 +1,18 @@
 import type { Metadata, Viewport } from 'next';
-import { Inter } from 'next/font/google';
+import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 
-const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
+const geistSans = Geist({ subsets: ['latin'], variable: '--font-sans' });
+const geistMono = Geist_Mono({ subsets: ['latin'], variable: '--font-mono' });
 
 export const metadata: Metadata = {
-  title: 'Learn Ledger - Verify Credentials & Authenticate Resumes',
+  title: 'Learn Ledger - Skill Verification Platform',
   description:
-    'Secure credential verification and resume authentication platform with blockchain integrity hashing.',
-  keywords: 'credential verification, resume authentication, blockchain, QR verification',
+    'Verify your skills through AI-powered assessments, upload your resume, and earn recognized credentials with blockchain integrity.',
+  keywords: 'skill assessment, resume verification, credentials, professional development',
   openGraph: {
     title: 'Learn Ledger',
-    description: 'Secure credential verification and resume authentication platform',
+    description: 'The future of professional skill verification',
     type: 'website',
   },
 };
@@ -21,7 +22,7 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
-  themeColor: '#1e293b',
+  themeColor: '#0f172a',
 };
 
 export default function RootLayout({
@@ -30,8 +31,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${inter.variable} bg-slate-950`}>
-      <body className="font-sans antialiased">{children}</body>
+    <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
+      <body className="font-sans bg-background text-foreground antialiased">{children}</body>
     </html>
   );
 }
