@@ -1,18 +1,11 @@
 import Link from 'next/link'
-import { createClient } from '@/lib/supabase/server'
-import { redirect } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Brain, FileText, Award, TrendingUp } from 'lucide-react'
 
 export default async function Home() {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-
-  // If user is logged in, redirect to dashboard
-  if (user) {
-    redirect('/dashboard')
-  }
+  // Landing page - no auth check needed here
+  // Dashboard will handle redirecting logged-in users
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">

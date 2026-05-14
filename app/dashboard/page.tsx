@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
-import { Brain, FileText, Award, LogOut } from 'lucide-react'
+import { Brain, FileText, Award, LogOut, TrendingUp } from 'lucide-react'
 
 export default async function Dashboard() {
   const supabase = await createClient()
@@ -165,5 +165,3 @@ export default async function Dashboard() {
     </main>
   )
 }
-
-import { TrendingUp } from 'lucide-react'
