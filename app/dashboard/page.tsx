@@ -1,177 +1,197 @@
-import { createClient } from '@/lib/supabase/server'
-import { redirect } from 'next/navigation'
+'use client'
+
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
-import { Brain, FileText, Award, LogOut, TrendingUp } from 'lucide-react'
+import { Brain, Award, FileText, Trophy, TrendingUp, LogOut } from 'lucide-react'
+import { XpBar } from '@/components/xp-bar'
+import { LevelBadge } from '@/components/level-badge'
+import { SkillRadar } from '@/components/skill-radar'
+import { Leaderboard } from '@/components/leaderboard'
+import { AchievementBadge } from '@/components/achievement-badge'
+import { mockApi, mockLeaderboard, mockCurrentUser } from '@/lib/mock-api'
+import { ACHIEVEMENTS } from '@/lib/constants'
+import { containerVariants, itemVariants } from '@/lib/animations'
 
-export default async function Dashboard() {
-  const supabase = await createClient()
-  const { data: { user }, error: authError } = await supabase.auth.getUser()
+export default function DashboardPage() {
+  const [user, setUser] = useState(mockCurrentUser)
+  const [leaderboard, setLeaderboard] = useState(mockLeaderboard)
+  const [loading, setLoading] = useState(true)
 
-  if (authError || !user) {
-    redirect('/auth/login')
-  }
+  useEffect(() => {
+    const loadData = async () => {
+      setLoading(false)
+    }
+    loadData()
+  }, [])
 
-  // Get user profile
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('*')
-    .eq('id', user.id)
-    .single()
-
-  // Get user skills
-  const { data: skills } = await supabase
-    .from('skills_assessments')
-    .select('*')
-    .eq('user_id', user.id)
-
-  // Calculate total XP
-  const totalXp = skills?.reduce((sum, skill) => sum + skill.total_xp, 0) || 0
-
-  async function handleSignOut() {
-    'use server'
-    const supabase = await createClient()
-    await supabase.auth.signOut()
-    redirect('/')
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
+          className="w-12 h-12 border-4 border-cyan-500/30 border-t-cyan-500 rounded-full"
+        />
+      </div>
+    )
   }
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
       {/* Navigation */}
-      <nav className="border-b border-slate-700 bg-slate-900/50 backdrop-blur">
+      <nav className="border-b border-slate-700/50 bg-slate-900/50 backdrop-blur">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Award className="h-8 w-8 text-primary" />
-              <span className="text-2xl font-bold text-white">Learn Ledger</span>
+            <div className="text-2xl font-bold bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">
+              Learn Ledger
             </div>
             <div className="flex items-center gap-4">
-              <span className="text-slate-300">{profile?.full_name || user.email}</span>
-              <form action={handleSignOut}>
-                <button
-                  type="submit"
-                  className="flex items-center gap-2 px-4 py-2 text-slate-300 hover:text-white transition"
-                >
-                  <LogOut className="h-5 w-5" />
-                  Sign Out
-                </button>
-              </form>
+              <div className="hidden sm:flex items-center gap-2">
+                <LevelBadge level={user.level} size="sm" />
+                <div>
+                  <p className="text-sm text-cyan-300 font-bold">{user.username}</p>
+                  <p className="text-xs text-slate-400">{user.totalXp.toLocaleString()} XP</p>
+                </div>
+              </div>
+              <Button variant="outline" size="sm">
+                <LogOut className="w-4 h-4" />
+              </Button>
             </div>
           </div>
         </div>
       </nav>
 
-      {/* Dashboard Content */}
-      <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-        <div className="mb-12">
-          <h1 className="text-4xl font-bold text-white">Welcome back, {profile?.full_name?.split(' ')[0]}!</h1>
-          <p className="mt-2 text-slate-300">Manage your skills, resumes, and credentials</p>
-        </div>
-
-        {/* Stats Cards */}
-        <div className="mb-12 grid gap-6 sm:grid-cols-3">
-          <Card className="border-slate-700 bg-slate-800/50 p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-slate-400">Total XP</p>
-                <p className="mt-2 text-3xl font-bold text-white">{totalXp}</p>
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
+        <motion.div
+          className="grid gap-8 mb-12"
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+        >
+          {/* Profile Card */}
+          <motion.div variants={itemVariants}>
+            <Card className="border-slate-700 bg-gradient-to-r from-slate-800/50 to-slate-700/50 p-8">
+              <div className="flex items-start justify-between">
+                <div className="flex items-center gap-6">
+                  <div className="w-20 h-20 rounded-full bg-gradient-to-br from-cyan-400 to-purple-500 flex items-center justify-center text-white font-bold text-3xl">
+                    {user.username.charAt(0)}
+                  </div>
+                  <div>
+                    <h2 className="text-3xl font-bold text-white">{user.username}</h2>
+                    <p className="text-slate-300">Streak: {user.streak} days 🔥</p>
+                  </div>
+                </div>
+                <LevelBadge level={user.level} size="lg" />
               </div>
-              <TrendingUp className="h-12 w-12 text-primary" />
-            </div>
-          </Card>
-
-          <Card className="border-slate-700 bg-slate-800/50 p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-slate-400">Skills Assessed</p>
-                <p className="mt-2 text-3xl font-bold text-white">{skills?.length || 0}</p>
+              <div className="mt-8">
+                <XpBar currentXp={user.xp} maxXp={1000} level={user.level} />
               </div>
-              <Brain className="h-12 w-12 text-accent" />
+            </Card>
+          </motion.div>
+
+          {/* Quick Actions */}
+          <motion.div variants={itemVariants}>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              <Link href="/assess">
+                <Card className="border-slate-700 bg-slate-800/30 p-6 hover:bg-slate-800/50 transition cursor-pointer group">
+                  <Brain className="w-10 h-10 text-cyan-400 mb-3 group-hover:scale-110 transition" />
+                  <h3 className="font-semibold text-white">Take Assessment</h3>
+                  <p className="text-xs text-slate-400 mt-1">+250 XP</p>
+                </Card>
+              </Link>
+
+              <Link href="/resume">
+                <Card className="border-slate-700 bg-slate-800/30 p-6 hover:bg-slate-800/50 transition cursor-pointer group">
+                  <FileText className="w-10 h-10 text-purple-400 mb-3 group-hover:scale-110 transition" />
+                  <h3 className="font-semibold text-white">Upload Resume</h3>
+                  <p className="text-xs text-slate-400 mt-1">+50 XP</p>
+                </Card>
+              </Link>
+
+              <Link href="/credentials">
+                <Card className="border-slate-700 bg-slate-800/30 p-6 hover:bg-slate-800/50 transition cursor-pointer group">
+                  <Award className="w-10 h-10 text-amber-400 mb-3 group-hover:scale-110 transition" />
+                  <h3 className="font-semibold text-white">Verify Credential</h3>
+                  <p className="text-xs text-slate-400 mt-1">+100 XP</p>
+                </Card>
+              </Link>
+
+              <Link href="/leaderboard">
+                <Card className="border-slate-700 bg-slate-800/30 p-6 hover:bg-slate-800/50 transition cursor-pointer group">
+                  <Trophy className="w-10 h-10 text-yellow-400 mb-3 group-hover:scale-110 transition" />
+                  <h3 className="font-semibold text-white">Leaderboard</h3>
+                  <p className="text-xs text-slate-400 mt-1">Rank #{Math.floor(Math.random() * 100) + 1}</p>
+                </Card>
+              </Link>
             </div>
-          </Card>
+          </motion.div>
 
-          <Card className="border-slate-700 bg-slate-800/50 p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-slate-400">Level</p>
-                <p className="mt-2 text-3xl font-bold text-white">
-                  {Math.floor(totalXp / 1000) + 1}
-                </p>
-              </div>
-              <Award className="h-12 w-12 text-secondary" />
-            </div>
-          </Card>
-        </div>
+          {/* Main Content Grid */}
+          <motion.div variants={itemVariants}>
+            <div className="grid gap-8 lg:grid-cols-3">
+              {/* Skills and Achievements */}
+              <div className="lg:col-span-2 space-y-8">
+                {/* Skills Radar */}
+                <SkillRadar skills={user.skills} />
 
-        {/* Action Cards */}
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          <Link href="/assess">
-            <Card className="border-slate-700 bg-slate-800/50 p-6 hover:bg-slate-700/50 transition cursor-pointer">
-              <Brain className="h-12 w-12 text-primary mb-4" />
-              <h3 className="text-lg font-semibold text-white">Start Assessment</h3>
-              <p className="mt-2 text-slate-300 text-sm">
-                Take a skill assessment and earn XP
-              </p>
-            </Card>
-          </Link>
-
-          <Link href="/resume">
-            <Card className="border-slate-700 bg-slate-800/50 p-6 hover:bg-slate-700/50 transition cursor-pointer">
-              <FileText className="h-12 w-12 text-accent mb-4" />
-              <h3 className="text-lg font-semibold text-white">Upload Resume</h3>
-              <p className="mt-2 text-slate-300 text-sm">
-                Analyze and score your resume
-              </p>
-            </Card>
-          </Link>
-
-          <Link href="/credentials">
-            <Card className="border-slate-700 bg-slate-800/50 p-6 hover:bg-slate-700/50 transition cursor-pointer">
-              <Award className="h-12 w-12 text-secondary mb-4" />
-              <h3 className="text-lg font-semibold text-white">View Credentials</h3>
-              <p className="mt-2 text-slate-300 text-sm">
-                Check your earned certificates
-              </p>
-            </Card>
-          </Link>
-
-          <Link href="/report">
-            <Card className="border-slate-700 bg-slate-800/50 p-6 hover:bg-slate-700/50 transition cursor-pointer">
-              <TrendingUp className="h-12 w-12 text-purple-400 mb-4" />
-              <h3 className="text-lg font-semibold text-white">Competency Report</h3>
-              <p className="mt-2 text-slate-300 text-sm">
-                View your AI-verified skills report
-              </p>
-            </Card>
-          </Link>
-        </div>
-
-        {/* Skills Section */}
-        {skills && skills.length > 0 && (
-          <div className="mt-12">
-            <h2 className="text-2xl font-bold text-white mb-6">Your Skills</h2>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {skills.map((skill) => (
-                <Card key={skill.id} className="border-slate-700 bg-slate-800/50 p-4">
-                  <h3 className="font-semibold text-white">{skill.skill_name}</h3>
-                  <div className="mt-2 flex items-center justify-between">
-                    <span className={`text-sm font-medium px-2 py-1 rounded ${
-                      skill.level === 'Expert' ? 'bg-primary/20 text-primary' :
-                      skill.level === 'Advanced' ? 'bg-accent/20 text-accent' :
-                      skill.level === 'Intermediate' ? 'bg-secondary/20 text-secondary' :
-                      'bg-slate-700/20 text-slate-300'
-                    }`}>
-                      {skill.level}
-                    </span>
-                    <span className="text-slate-300 text-sm">{skill.total_xp} XP</span>
+                {/* Achievements */}
+                <Card className="border-slate-700 bg-slate-800/30 p-6">
+                  <h3 className="text-lg font-semibold text-white mb-6">Achievements</h3>
+                  <div className="grid grid-cols-4 gap-6">
+                    {Object.entries(ACHIEVEMENTS)
+                      .slice(0, 8)
+                      .map(([key, achievement]) => (
+                        <AchievementBadge
+                          key={achievement.id}
+                          achievementId={achievement.id}
+                          unlocked={user.achievements.includes(achievement.id)}
+                        />
+                      ))}
                   </div>
                 </Card>
-              ))}
+              </div>
+
+              {/* Sidebar */}
+              <div className="space-y-8">
+                {/* Top Leaderboard */}
+                <Card className="border-slate-700 bg-slate-800/30 p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-lg font-semibold text-white">Top Players</h3>
+                    <Trophy className="w-5 h-5 text-yellow-400" />
+                  </div>
+                  <Leaderboard entries={leaderboard.slice(0, 5)} currentUserId={user.id} />
+                </Card>
+
+                {/* Stats */}
+                <Card className="border-slate-700 bg-slate-800/30 p-6">
+                  <h3 className="text-lg font-semibold text-white mb-4">Statistics</h3>
+                  <div className="space-y-3">
+                    <div className="flex justify-between">
+                      <span className="text-slate-400">Total XP:</span>
+                      <span className="text-cyan-300 font-bold">{user.totalXp.toLocaleString()}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-slate-400">Skills:</span>
+                      <span className="text-cyan-300 font-bold">{user.skills.length}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-slate-400">Achievements:</span>
+                      <span className="text-cyan-300 font-bold">{user.achievements.length}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-slate-400">Streak:</span>
+                      <span className="text-cyan-300 font-bold">{user.streak} days</span>
+                    </div>
+                  </div>
+                </Card>
+              </div>
             </div>
-          </div>
-        )}
-      </section>
+          </motion.div>
+        </motion.div>
+      </div>
     </main>
   )
 }
