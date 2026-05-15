@@ -105,7 +105,7 @@ export default async function Dashboard() {
         </div>
 
         {/* Action Cards */}
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           <Link href="/assess">
             <Card className="border-slate-700 bg-slate-800/50 p-6 hover:bg-slate-700/50 transition cursor-pointer">
               <Brain className="h-12 w-12 text-primary mb-4" />
@@ -132,6 +132,16 @@ export default async function Dashboard() {
               <h3 className="text-lg font-semibold text-white">View Credentials</h3>
               <p className="mt-2 text-slate-300 text-sm">
                 Check your earned certificates
+              </p>
+            </Card>
+          </Link>
+
+          <Link href="/report">
+            <Card className="border-slate-700 bg-slate-800/50 p-6 hover:bg-slate-700/50 transition cursor-pointer">
+              <TrendingUp className="h-12 w-12 text-purple-400 mb-4" />
+              <h3 className="text-lg font-semibold text-white">Competency Report</h3>
+              <p className="mt-2 text-slate-300 text-sm">
+                View your AI-verified skills report
               </p>
             </Card>
           </Link>
