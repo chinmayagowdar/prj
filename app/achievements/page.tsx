@@ -1,11 +1,9 @@
 'use client'
 
-import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Card } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
 import { Navbar } from '@/components/navbar'
-import { Trophy, Star, Lock, Clock, Users, TrendingUp } from 'lucide-react'
+import { Trophy, Star, Lock, TrendingUp } from 'lucide-react'
 import { containerVariants, itemVariants } from '@/lib/animations'
 
 const ACHIEVEMENTS = [
@@ -126,7 +124,7 @@ export default function AchievementsPage() {
           <motion.div variants={itemVariants}>
             <h2 className="text-2xl font-bold text-white mb-6">All Achievements</h2>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {ACHIEVEMENTS.map((achievement, idx) => (
+              {ACHIEVEMENTS.map((achievement) => (
                 <motion.div
                   key={achievement.id}
                   variants={itemVariants}
@@ -166,13 +164,13 @@ export default function AchievementsPage() {
                         <div className="flex justify-between text-xs">
                           <span className="text-slate-400">Progress</span>
                           <span className="text-cyan-300">
-                            {achievement.progress}/{achievement.target}
+                            {achievement.progress ?? 0}/{achievement.target ?? 0}
                           </span>
                         </div>
                         <div className="w-full bg-slate-700 rounded-full h-2">
                           <motion.div
                             initial={{ width: 0 }}
-                            animate={{ width: `${(achievement.progress / achievement.target) * 100}%` }}
+                            animate={{ width: `${((achievement.progress ?? 0) / (achievement.target ?? 1)) * 100}%` }}
                             transition={{ duration: 1, ease: 'easeOut' }}
                             className="h-full bg-gradient-to-r from-cyan-400 to-purple-500 rounded-full"
                           />

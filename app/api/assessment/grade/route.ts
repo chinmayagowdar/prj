@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
     })
     
     // Update scenario with score
-    const { data: scenario, error: updateError } = await supabase
+    const { error: updateError } = await supabase
       .from('assessment_scenarios')
       .update({
         score: gradingResult.score,
