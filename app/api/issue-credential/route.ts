@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const supabase = createClient()
+    const supabase = await createClient()
     const now = new Date()
     const credentialHash = generateCredentialHash(user_id, skill_id, final_score, now)
 

@@ -1,20 +1,18 @@
 'use client'
 
-import { useParams, useRouter } from 'next/navigation'
+import { useParams } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Navbar } from '@/components/navbar'
-import { Trophy, Download, Share2, ArrowLeft, CheckCircle, AlertCircle } from 'lucide-react'
+import { Trophy, Share2, ArrowLeft, CheckCircle, AlertCircle } from 'lucide-react'
 import Link from 'next/link'
 import { useState } from 'react'
-import { mockCurrentUser } from '@/lib/mock-api'
 
 export default function ResultsPage() {
   const params = useParams()
   const skillId = params.skillId as string
-  const router = useRouter()
-  const [user] = useState(mockCurrentUser)
+  const [user] = useState({ username: 'Student', level: 1, totalXp: 0 })
 
   // Mock final score (in real app, this comes from database)
   const finalScore = 85

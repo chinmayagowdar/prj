@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from '@/components/ui/button'
@@ -11,7 +11,6 @@ import { MCQRound } from '@/components/mcq-round'
 import { RoundStepper } from '@/components/round-stepper'
 import { ArrowLeft, CheckCircle } from 'lucide-react'
 import Link from 'next/link'
-import { mockCurrentUser } from '@/lib/mock-api'
 
 // Sample MCQ questions for demo
 const MCQ_QUESTIONS = [
@@ -63,7 +62,7 @@ export default function RoundPage() {
   const roundNumber = parseInt(params.roundNumber as string)
   const router = useRouter()
 
-  const [user] = useState(mockCurrentUser)
+  const [user] = useState({ username: 'Student', level: 1, totalXp: 0 })
   const [showCamera, setShowCamera] = useState(roundNumber === 1)
   const [roundScores, setRoundScores] = useState<(number | null)[]>([null, null, null])
   const [roundComplete, setRoundComplete] = useState(false)

@@ -1,21 +1,19 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { useParams, useRouter } from 'next/navigation'
+import { useState } from 'react'
+import { useParams } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Navbar } from '@/components/navbar'
 import { ArrowLeft, AlertCircle, CheckCircle } from 'lucide-react'
 import Link from 'next/link'
-import { mockCurrentUser } from '@/lib/mock-api'
 import { containerVariants, itemVariants } from '@/lib/animations'
 
 export default function AssessmentPage() {
   const params = useParams()
   const skillId = params.skillId as string
-  const router = useRouter()
-  const [user] = useState(mockCurrentUser)
+  const [user] = useState({ username: 'Student', level: 1, totalXp: 0 })
 
   const SKILLS = {
     python: {
