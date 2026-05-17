@@ -318,6 +318,9 @@ export default function Home() {
           ))}
         </motion.div>
       </section>
+
+      {/* CTA Section */}
+      <section className="relative py-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
         <motion.div
           className="absolute inset-0 bg-gradient-to-r from-cyan-500/10 to-purple-500/10"
           initial={{ opacity: 0 }}
