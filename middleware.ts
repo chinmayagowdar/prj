@@ -1,13 +1,8 @@
-import { type NextRequest, NextResponse } from 'next/server'
+import { updateSession } from '@/lib/supabase/proxy'
+import { type NextRequest } from 'next/server'
 
 export async function middleware(request: NextRequest) {
-  // Just pass through without session refresh to avoid Edge Runtime issues
-  // Session management will be handled in server components instead
-  return NextResponse.next({
-    request: {
-      headers: request.headers,
-    },
-  })
+  return await updateSession(request)
 }
 
 export const config = {
