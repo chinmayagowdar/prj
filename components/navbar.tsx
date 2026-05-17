@@ -1,8 +1,8 @@
 'use client'
 
 import Link from 'next/link'
-import { motion } from 'framer-motion'
-import { Menu, X, Bell, Settings, LogOut } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Menu, X, Bell, Settings, LogOut, Award, Home } from 'lucide-react'
 import { useState } from 'react'
 import { LevelBadge } from './level-badge'
 
@@ -18,6 +18,7 @@ interface NavbarProps {
 
 export function Navbar({ user, onLogout }: NavbarProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [userMenuOpen, setUserMenuOpen] = useState(false)
 
   return (
     <nav className="border-b border-slate-700/50 bg-slate-900/50 backdrop-blur sticky top-0 z-40">
@@ -41,6 +42,9 @@ export function Navbar({ user, onLogout }: NavbarProps) {
             <Link href="/leaderboard" className="text-slate-300 hover:text-white transition text-sm font-medium">
               Leaderboard
             </Link>
+            <Link href="/achievements" className="text-slate-300 hover:text-white transition text-sm font-medium">
+              Achievements
+            </Link>
             <Link href="/assess" className="text-slate-300 hover:text-white transition text-sm font-medium">
               Assessments
             </Link>
@@ -58,30 +62,87 @@ export function Navbar({ user, onLogout }: NavbarProps) {
               </div>
             )}
 
+            {/* Notifications */}
             <motion.button
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}
-              className="text-slate-300 hover:text-white transition relative"
+              className="text-slate-300 hover:text-white transition relative hidden sm:block"
             >
-              <Bell className="w-5 h-5" />
-              <motion.div
-                className="absolute top-1 right-1 w-2 h-2 bg-cyan-400 rounded-full"
-                animate={{ scale: [1, 1.2, 1] }}
-                transition={{ duration: 2, repeat: Infinity }}
-              />
+              <Link href="/notifications">
+                <Bell className="w-5 h-5" />
+                <motion.div
+                  className="absolute top-1 right-1 w-2 h-2 bg-cyan-400 rounded-full"
+                  animate={{ scale: [1, 1.2, 1] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                />
+              </Link>
             </motion.button>
 
-            <button className="text-slate-300 hover:text-white transition">
-              <Settings className="w-5 h-5" />
+            {/* Settings */}
+            <button className="text-slate-300 hover:text-white transition hidden sm:block">
+              <Link href="/settings">
+                <Settings className="w-5 h-5" />
+              </Link>
             </button>
 
-            {onLogout && (
-              <button
-                onClick={onLogout}
-                className="text-slate-300 hover:text-red-400 transition"
-              >
-                <LogOut className="w-5 h-5" />
-              </button>
+            {/* User Menu */}
+            {user && (
+              <div className="relative">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setUserMenuOpen(!userMenuOpen)}
+                  className="w-10 h-10 rounded-full bg-gradient-to-br from-cyan-400 to-purple-500 flex items-center justify-center text-white font-bold hover:shadow-lg transition"
+                >
+                  {user.username.charAt(0)}
+                </motion.button>
+
+                <AnimatePresence>
+                  {userMenuOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                      className="absolute right-0 mt-2 w-48 bg-slate-800 border border-slate-700 rounded-lg shadow-lg overflow-hidden"
+                    >
+                      <Link
+                        href="/profile"
+                        className="flex items-center gap-3 px-4 py-3 hover:bg-slate-700/50 transition text-slate-300 hover:text-white"
+                        onClick={() => setUserMenuOpen(false)}
+                      >
+                        <Home className="w-4 h-4" />
+                        My Profile
+                      </Link>
+                      <Link
+                        href="/achievements"
+                        className="flex items-center gap-3 px-4 py-3 hover:bg-slate-700/50 transition text-slate-300 hover:text-white"
+                        onClick={() => setUserMenuOpen(false)}
+                      >
+                        <Award className="w-4 h-4" />
+                        Achievements
+                      </Link>
+                      <Link
+                        href="/settings"
+                        className="flex items-center gap-3 px-4 py-3 hover:bg-slate-700/50 transition text-slate-300 hover:text-white"
+                        onClick={() => setUserMenuOpen(false)}
+                      >
+                        <Settings className="w-4 h-4" />
+                        Settings
+                      </Link>
+                      <button
+                        onClick={() => {
+                          onLogout?.()
+                          setUserMenuOpen(false)
+                        }}
+                        className="w-full flex items-center gap-3 px-4 py-3 hover:bg-red-900/20 transition text-red-400 border-t border-slate-700"
+                      >
+                        <LogOut className="w-4 h-4" />
+                        Logout
+                      </button>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
             )}
 
             {/* Mobile Menu Button */}
@@ -115,10 +176,22 @@ export function Navbar({ user, onLogout }: NavbarProps) {
               Leaderboard
             </Link>
             <Link
+              href="/achievements"
+              className="block px-4 py-2 text-slate-300 hover:text-white hover:bg-slate-800/50 rounded transition"
+            >
+              Achievements
+            </Link>
+            <Link
               href="/assess"
               className="block px-4 py-2 text-slate-300 hover:text-white hover:bg-slate-800/50 rounded transition"
             >
               Assessments
+            </Link>
+            <Link
+              href="/notifications"
+              className="block px-4 py-2 text-slate-300 hover:text-white hover:bg-slate-800/50 rounded transition"
+            >
+              Notifications
             </Link>
           </motion.div>
         )}
